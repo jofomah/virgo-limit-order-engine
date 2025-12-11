@@ -5,6 +5,7 @@ services:
   vs_backend:
     build:
       context: ./backend
+      dockerfile: ../docker/backend/Dockerfile
     container_name: virgo-backend
     restart: unless-stopped
     working_dir: /var/www/html
