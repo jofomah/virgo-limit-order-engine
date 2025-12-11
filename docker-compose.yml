@@ -1,0 +1,70 @@
+services:
+  # ----------------------------
+  # PHP-FPM Application Service
+  # ----------------------------
+  vs_backend:
+    build:
+      context: ./backend
+    container_name: virgo-backend
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./backend:/var/www/html
+    environment:
+      APP_ENV: ${APP_ENV}
+      APP_DEBUG: ${APP_DEBUG}
+      APP_URL: ${APP_URL}
+
+      # Database env passed from root .env file
+      DB_HOST: ${DB_HOST}
+      DB_DATABASE: ${MYSQL_DATABASE}
+      DB_USERNAME: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+
+      # Redist settings ...
+      REDIS_HOST: ${REDIS_HOST}
+    depends_on:
+      - vs_database
+      - vs_redis
+    networks:
+      - virgo_net
+
+  # ----------------------------
+  # MySQL Database
+  # ----------------------------
+  vs_database:
+    image: mysql:8.0
+    container_name: virgo-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: ${TZ}
+    volumes:
+      - virgo_db_data:/var/lib/mysql
+    ports:
+      # to avoid conflict with host machine, use 3307 on host machine
+      - "3307:3306"
+    networks:
+      - virgo_net
+
+  # ----------------------------
+  # Redis Cache + Queue Backend
+  # ----------------------------
+  vs_redis:
+    image: redis:7.2-alpine
+    container_name: virgo-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - virgo_net
+
+networks:
+  virgo_net:
+    driver: bridge
+
+volumes:
+  virgo_db_data:
