@@ -59,6 +59,6 @@ RUN mkdir -p storage bootstrap/cache \
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-EXPOSE 8000
+EXPOSE 9000
 
 CMD ["php-fpm"]
