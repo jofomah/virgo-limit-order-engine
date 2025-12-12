@@ -1,11 +1,9 @@
 <?php
 
+use App\Http\Controllers\Api\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/login', function () {
-    return response()->json("You have logged in!");
-});
+Route::post('/login', [AuthController::class, 'login']);
 
-Route::post('/logout', function () {
-    return response()->json("You have logged out!");
-});
+Route::middleware('auth:sanctum')
+    ->post('/logout', [AuthController::class, 'logout']);
