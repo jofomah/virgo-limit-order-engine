@@ -9,3 +9,6 @@ Route::middleware('throttle:api')
         require __DIR__ . '/modules/auth.php';
     });
 
+
+Broadcast::routes(['middleware' => ['auth:sanctum', 'throttle:broadcast']]);
+

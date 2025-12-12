@@ -11,11 +11,23 @@ services:
     working_dir: /var/www/html
     volumes:
       - ./backend:/var/www/html
+      - /var/www/html/vendor # vendor directory created during Docker build to survive.
     environment:
       APP_ENV: ${APP_ENV}
       APP_DEBUG: ${APP_DEBUG}
       APP_URL: ${APP_URL}
       FRONT_END_DOMAIN: ${FRONT_END_DOMAIN}
+
+      # Pusher setting passed via root .env file
+      PUSHER_HOST: ${PUSHER_HOST}
+      PUSHER_APP_ID: ${PUSHER_APP_ID}
+      PUSHER_APP_KEY: ${PUSHER_APP_KEY}
+      PUSHER_APP_SECRET: ${PUSHER_APP_SECRET}
+      PUSHER_APP_CLUSTER: ${PUSHER_APP_CLUSTER}
+      PUSHER_PORT: ${PUSHER_PORT}
+      PUSHER_SCHEME: ${PUSHER_SCHEME}
+
+      BROADCAST_CONNECTION: ${BROADCAST_CONNECTION}
 
       # Database env passed from root .env file
       DB_HOST: ${DB_HOST}
@@ -23,7 +35,7 @@ services:
       DB_USERNAME: ${MYSQL_USER}
       DB_PASSWORD: ${MYSQL_PASSWORD}
 
-      # Redist settings ...
+      # Redis settings ...
       REDIS_HOST: ${REDIS_HOST}
     depends_on:
       - vs_database
@@ -81,6 +93,8 @@ services:
       - "5173:5173"           # Vite dev server
     environment:
       VITE_API_URL: ${APP_URL}   # Should match Laravel Backend APP_URL for calling BE.
+      VITE_PUSHER_APP_KEY: ${PUSHER_APP_KEY}
+      VITE_PUSHER_APP_CLUSTER: ${PUSHER_APP_CLUSTER}
     networks:
       - virgo_net
 
