@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -18,7 +17,7 @@ class BaseRepository
      */
     public function withRelations(array $relations): static
     {
-        $this->with = $relations;
+        $this->with = array_unique(array_merge($this->with, $relations));
         return $this;
     }
 

@@ -30,7 +30,8 @@ RUN docker-php-ext-install \
     opcache \
     gd \
     zip \
-    mbstring
+    mbstring \
+    bcmath
 
 # Install Redis extension (requires build tools for phpize)
 RUN apk add --no-cache --virtual .build-deps \

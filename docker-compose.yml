@@ -112,6 +112,63 @@ services:
     networks:
       - virgo_net
 
+  # ----------------------------
+  # Laravel Queue Worker
+  # ----------------------------
+  vs_queue_worker:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend/Dockerfile
+    container_name: virgo-queue-worker
+    restart: unless-stopped
+    working_dir: /var/www/html
+
+    command: >
+      sh -c "php -d memory_limit=256M artisan queue:work
+      --queue=matching,default
+      --sleep=0
+      --tries=3
+      --timeout=90
+      --max-jobs=500
+      --max-time=3600"
+
+    volumes:
+      - ./backend:/var/www/html
+      - /var/www/html/vendor
+
+    environment:
+      APP_ENV: ${APP_ENV}
+      APP_DEBUG: ${APP_DEBUG}
+      APP_URL: ${APP_URL}
+      FRONT_END_DOMAIN: ${FRONT_END_DOMAIN}
+
+      # Pusher
+      PUSHER_HOST: ${PUSHER_HOST}
+      PUSHER_APP_ID: ${PUSHER_APP_ID}
+      PUSHER_APP_KEY: ${PUSHER_APP_KEY}
+      PUSHER_APP_SECRET: ${PUSHER_APP_SECRET}
+      PUSHER_APP_CLUSTER: ${PUSHER_APP_CLUSTER}
+      PUSHER_PORT: ${PUSHER_PORT}
+      PUSHER_SCHEME: ${PUSHER_SCHEME}
+      BROADCAST_CONNECTION: ${BROADCAST_CONNECTION}
+
+      # Database
+      DB_HOST: ${DB_HOST}
+      DB_DATABASE: ${MYSQL_DATABASE}
+      DB_USERNAME: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+
+      # Redis
+      REDIS_HOST: ${REDIS_HOST}
+
+    depends_on:
+      - vs_backend
+      - vs_database
+      - vs_redis
+
+    networks:
+      - virgo_net
+
 networks:
   virgo_net:
     driver: bridge

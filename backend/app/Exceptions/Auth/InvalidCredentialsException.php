@@ -1,9 +1,10 @@
 <?php
-
 namespace App\Exceptions\Auth;
+
+use Illuminate\Http\Response;
 
 class InvalidCredentialsException extends AuthException
 {
     protected $message = 'The provided credentials are invalid.';
-    protected $code = 401; // HTTP Unauthorized
+    protected $code    = Response::HTTP_UNAUTHORIZED;
 }

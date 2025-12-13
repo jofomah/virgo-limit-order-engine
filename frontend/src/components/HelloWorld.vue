@@ -1,10 +1,18 @@
 <script setup>
+import { useAuthStore } from '@/stores/auth';
+
 defineProps({
   msg: {
     type: String,
     required: true,
   },
-})
+});
+
+const auth = useAuthStore();
+
+async function submit() {
+  await auth.login('jideobi', 'ofomah');
+}
 </script>
 
 <template>
@@ -15,6 +23,12 @@ defineProps({
       <a href="https://vite.dev/" target="_blank" rel="noopener">Vite</a> +
       <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>.
     </h3>
+  </div>
+
+  <div>
+    <input v-model="email" type="email" placeholder="Email" />
+    <input v-model="password" type="password" placeholder="Password" />
+    <button @click="submit">Login</button>
   </div>
 </template>
 

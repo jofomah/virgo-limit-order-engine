@@ -7,13 +7,16 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         commands: __DIR__ . '/../routes/console.php',
         channels: __DIR__ . '/../routes/channels.php',
+
         health: '/up',
         using: function () {
             // 1. Define the Rate Limiter
@@ -48,4 +51,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AppDomainException $e) {
             return $e->toResponse();
         });
+
+        $exceptions->renderable(function (AccessDeniedHttpException $e, $request) {
+            return response()->json([
+                'error'    => 'FORBIDDEN_ACCESS',
+                'message'  => 'You do not have permission to cancel this order.',
+                'order_id' => $request->route('id'),
+            ], Response::HTTP_FORBIDDEN);
+        });
+
     })->create();
